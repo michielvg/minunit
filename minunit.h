@@ -168,7 +168,6 @@ static void (*minunit_teardown)(void) = NULL;
 	minunit_assert++;\
 	minunit_run_assert++;\
 	if (!(test)) {\
-		MU_PROGRESS(1);\
 		(void)snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %s", __func__, __FILE__, __LINE__, #test);\
 		minunit_status = 1;\
 		return;\
@@ -189,7 +188,6 @@ static void (*minunit_teardown)(void) = NULL;
 	minunit_assert++;\
 	minunit_run_assert++;\
 	if (!(test)) {\
-		MU_PROGRESS(1);\
 		(void)snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %s", __func__, __FILE__, __LINE__, message);\
 		minunit_status = 1;\
 		return;\
@@ -206,7 +204,6 @@ static void (*minunit_teardown)(void) = NULL;
 	minunit_tmp_e = (expected);\
 	minunit_tmp_r = (result);\
 	if (minunit_tmp_e != minunit_tmp_r) {\
-		MU_PROGRESS(1);\
 		(void)snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %d expected but was %d", __func__, __FILE__, __LINE__, minunit_tmp_e, minunit_tmp_r);\
 		minunit_status = 1;\
 		return;\
@@ -223,7 +220,6 @@ static void (*minunit_teardown)(void) = NULL;
 	minunit_tmp_e = (expected);\
 	minunit_tmp_r = (result);\
 	if (fabs(minunit_tmp_e-minunit_tmp_r) > MINUNIT_EPSILON) {\
-		MU_PROGRESS(1);\
 		int minunit_significant_figures = 1 - log10(MINUNIT_EPSILON);\
 		(void)snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %.*g expected but was %.*g", __func__, __FILE__, __LINE__, minunit_significant_figures, minunit_tmp_e, minunit_significant_figures, minunit_tmp_r);\
 		minunit_status = 1;\
@@ -245,7 +241,6 @@ static void (*minunit_teardown)(void) = NULL;
 		minunit_tmp_r = "<null pointer>";\
 	}\
 	if(strcmp(minunit_tmp_e, minunit_tmp_r) != 0) {\
-		MU_PROGRESS(1);\
 		(void)snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: '%s' expected but was '%s'", __func__, __FILE__, __LINE__, minunit_tmp_e, minunit_tmp_r);\
 		minunit_status = 1;\
 		return;\
