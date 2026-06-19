@@ -7,6 +7,8 @@ extern "C" {
 
 #include <stddef.h>
 
+#define MU_TEST_ENTRY(fn) { #fn, fn }
+
 /*
  * Test function type
  */
