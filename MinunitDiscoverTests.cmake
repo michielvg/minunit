@@ -1,36 +1,51 @@
 function(minunit_discover_tests target)
 
-    set(options)
-    set(oneValueArgs WORKING_DIRECTORY)
-    set(multiValueArgs)
-    cmake_parse_arguments(MU "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    message(STATUS "=== MINUNIT DISCOVERY (FUNC) RUNNING ===")
 
-    if(NOT MU_WORKING_DIRECTORY)
-        set(MU_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    set(script "${MINUNIT_DISCOVER_TESTS_DIR}/minunit_discover_tests.cmake")
+    set(out "${CMAKE_CURRENT_BINARY_DIR}/${target}_tests.cmake")
+    set(test_exec "${CMAKE_CURRENT_BINARY_DIR}/${target}")
+
+    file(WRITE "${out}" "# generated\n")
+
+    execute_process(
+        COMMAND ${test_exec} --list
+        OUTPUT_VARIABLE TEST_LIST
+        RESULT_VARIABLE TEST_RESULT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    message(STATUS "${TEST_LIST}")
+
+    if(NOT TEST_RESULT EQUAL 0)
+        message(FATAL_ERROR
+            "Failed to enumerate tests from ${target}")
     endif()
 
-    set(ctest_include_file
-        "${CMAKE_CURRENT_BINARY_DIR}/${target}_tests.cmake")
+    file(WRITE "${out}" "")
 
-    add_custom_command(
-        TARGET ${target}
-        POST_BUILD
+    string(REPLACE "\n" ";" TEST_NAMES "${TEST_LIST}")
 
-        COMMAND
-            ${CMAKE_COMMAND}
+    foreach(TEST_NAME IN LISTS TEST_NAMES)
+
+        file(APPEND "${out}"
+    "add_test(
+        \"${TEST_NAME}\"
+        \"${test_exec}\" \"${TEST_NAME}\"
+    )
+    ")
+
+    endforeach()
+
+    add_custom_target(${target}_discover_tests
+        COMMAND ${CMAKE_COMMAND}
             -DTEST_EXECUTABLE=$<TARGET_FILE:${target}>
-            -DOUTPUT_FILE=${ctest_include_file}
-            -P ${CMAKE_CURRENT_LIST_DIR}/minunit_discover_tests.cmake
-
-        BYPRODUCTS ${ctest_include_file}
-        VERBATIM
+            -DOUTPUT_FILE=${out}
+            -P ${script}
     )
 
-    set_property(
-        DIRECTORY
-        APPEND
-        PROPERTY TEST_INCLUDE_FILES
-        ${ctest_include_file}
-    )
+    add_dependencies(${target}_discover_tests ${target})
+
+    set_property(DIRECTORY APPEND PROPERTY TEST_INCLUDE_FILES ${out})
 
 endfunction()
