@@ -1,4 +1,4 @@
-function(minunit_discover_tests target)
+function(minunit_discover_tests target prefix)
 
     message(STATUS "=== MinUnit discovery for: ${target} ===")
 
@@ -16,11 +16,16 @@ function(minunit_discover_tests target)
 
     set(out "${CMAKE_CURRENT_BINARY_DIR}/${target}_tests.cmake")
 
+    # Normalize labels (ensure it's always a CMake list)
+    message(STATUS "MinUnit target: ${target}")
+    message(STATUS "MinUnit labels: ${MINUNIT_LABELS}")
+
     add_custom_command(
         OUTPUT ${out}
         COMMAND ${CMAKE_COMMAND}
             -DTEST_EXECUTABLE=$<TARGET_FILE:${target}>
             -DOUTPUT_FILE=${out}
+            -DPREFIX=${prefix} 
             -P "${script}"
         DEPENDS ${target}
         VERBATIM

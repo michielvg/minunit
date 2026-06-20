@@ -10,6 +10,10 @@ if(NOT DEFINED OUTPUT_FILE)
     message(FATAL_ERROR "OUTPUT_FILE not defined")
 endif()
 
+if(NOT DEFINED PREFIX)
+    message(FATAL_ERROR "PREFIX not defined")
+endif()
+
 message(STATUS "Running MinUnit discovery:")
 message(STATUS "  Executable: ${TEST_EXECUTABLE}")
 
@@ -41,10 +45,13 @@ foreach(TEST_NAME IN LISTS TEST_NAMES)
         continue()
     endif()
 
-    file(APPEND "${OUTPUT_FILE}"
-"add_test(${TEST_NAME} ${TEST_EXECUTABLE} ${TEST_NAME})
+    set(FULL_NAME "${PREFIX}.${TEST_NAME}")
 
-")
+    file(APPEND "${OUTPUT_FILE}"
+        "add_test(${FULL_NAME} ${TEST_EXECUTABLE} ${TEST_NAME})\n"
+        "set_tests_properties(${FULL_NAME} PROPERTIES LABELS \"${LABELS}\")\n\n"
+    )
+
 
 endforeach()
 
